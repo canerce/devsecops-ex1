@@ -1,0 +1,17 @@
+---
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - pip install -r requirements.txt
+      - pip install bandit safety
+  build:
+    commands:
+      - bandit -f json -o sast-result.json app.py | true
+      - safety check -r requirements.txt --json > sca-result.json | true  
+      
+artifacts:
+  files:
+    - sast-result.json
+    - sca-result.json
