@@ -1,0 +1,25 @@
+stages:
+  - test
+  - build
+  
+test:
+  stage: test
+  image: python:2.7-alpine3.9
+  script:    
+    - pip install -r requirements.txt
+    - pip install bandit safety
+    - bandit -f json -o sast-result.json -r app.py || true
+    - safety check -r requirements.txt --json > sca-result.json || true
+  artifacts:
+    paths:
+      - sast-result.json
+      - sca-result.json
+
+build:
+  stage: build
+  dependencies: 
+    - test
+  script:
+    - docker build -t vulflask .
+    
+
